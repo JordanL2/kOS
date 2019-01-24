@@ -3,16 +3,14 @@ CLEARSCREEN.
 
 // Default Values
 
+SET vcontrol TO 0.
+SET vveltgt TO 0.
+
+SET hcontrol TO 0.
 SET velxtgt TO 0.
 SET velytgt TO 0.
-SET pitchtgt TO 0.
-SET rolltgt TO 0.
-SET yawtgtvel TO 0.
 
-SET maxtilt TO 45.
-
-SET vvelon TO 0.
-SET vveltgt TO 0.
+SET displayframes TO 10.
 
 
 // Functions
@@ -56,48 +54,44 @@ DECLARE FUNCTION display {
 
 // Vertical Velocity Control Setup
 
-LOCK accvec TO SHIP:SENSORS:ACC.
-LOCK vertacc TO accvec:Z.
-
-SET vertaccF TO 0.3.
-SET Kp TO 0.04.
-SET Ki TO 0.04.
-SET Kd TO 0.04.
-
+LOCK vertacc TO SHIP:SENSORS:ACC:Z.
 LOCK vvel TO SHIP:VERTICALSPEED.
-LOCK vertacctgt TO vertaccF * (vveltgt - vvel).
-SET vertpid TO PIDLOOP(Kp, Ki, Kd).
-vertpid:RESET().
 
-SET thrott TO 0.
+SET vertaccF TO 0.2.
+LOCK vertacctgt TO vertaccF * (vveltgt - vvel).
+SET vertpid TO PIDLOOP(0.04, 0.04, 0.04, -0.05, 0.05).
+vertpid:RESET().
 
 
 // Horizontal Velocity Control Setup
+
+SET maxtilt TO 45.
 
 LOCK velx TO SHIP:VELOCITY:SURFACE * SHIP:FACING:STARVECTOR.
 LOCK vely TO SHIP:VELOCITY:SURFACE * SHIP:FACING:FOREVECTOR.
 SET velxpid TO PIDLOOP(3, 1, 0.1, -maxtilt, maxtilt).
 velxpid:RESET().
-SET velypid TO PIDLOOP(5, 1, 0.1, -maxtilt, maxtilt).
+SET velypid TO PIDLOOP(3, 1, 0.1, -maxtilt, maxtilt).
 velypid:RESET().
 
 
 // Steering Control Setup
 
+SET pitchtgt TO 0.
+SET rolltgt TO 0.
+SET yawtgtvel TO 0.
+
 LOCK pitch TO 90 - vectorangle(UP:FOREVECTOR, FACING:FOREVECTOR).
 LOCK yaw TO degrees(360 - SHIP:BEARING).
 LOCK roll TO balanced_degrees(vectorangle(up:vector,ship:facing:starvector) + 270).
-
-LOCK pitchoffset TO pitchtgt - pitch.
-LOCK rolloffset TO rolltgt - roll.
 
 LOCK pitchmom TO 0 - SHIP:ANGULARMOMENTUM:X.
 LOCK rollmom TO 0 - SHIP:ANGULARMOMENTUM:Y.
 LOCK yawmom TO 0 - SHIP:ANGULARMOMENTUM:Z.
 
 SET momF TO 1.
-LOCK pitchmomtgt TO pitchoffset * momF.
-LOCK rollmomtgt TO rolloffset * momF.
+LOCK pitchmomtgt TO (pitchtgt - pitch) * momF.
+LOCK rollmomtgt TO (rolltgt - roll) * momF.
 LOCK yawmomtgt TO yawtgtvel.
 
 SET pitchpid TO PIDLOOP(0.1, 0.05, 0.01, -1, 1).
@@ -118,7 +112,9 @@ SET SHIP:CONTROL:YAW TO 0.
 SET framecount TO 0.
 UNTIL FALSE {
 
-    IF vvelon = 0 {
+    // Vertical Control
+
+    IF vcontrol = 0 {
 
         PRINT "     CONTROL: OFF [V to toggle]" AT(0, 0).
 
@@ -126,41 +122,16 @@ UNTIL FALSE {
         
         // Display Status
 
-        IF framecount = 10 {
+        IF framecount = displayframes {
 
-            PRINT "     CONTROL: ON  [V to toggle]" AT(0, 0).
+            PRINT "   V-CONTROL: ON  [V to toggle]" AT(0, 0).
 
             PRINT "   VEL-V-TGT: " + display(vveltgt)    + " [-/+, BSP to zero]" AT(0, 2).
             PRINT "       VEL-V: " + display(vvel)       + "     " AT(0, 3).
             PRINT "VEL-V-ACCTGT: " + display(vertacctgt) + "     " AT(0, 4).
             print "   VEL-V-ACC: " + display(vertacc)    + "     " AT(0, 5).
 
-            PRINT " YAW-TGT-VEL: " + display(yawtgtvel) + " [Q/E, R to zero]" AT(0, 7).
-            PRINT "     YAW-VEL: " + display(yawmom)    + "     " AT(0, 8).
-            PRINT "     BEARING: " + display(yaw)       + "     " AT(0, 9).
-
-            PRINT "   VEL-X-TGT: " + display(velxtgt) + " [Q/E, R to zero]" AT(0, 11).
-            PRINT "       VEL-X: " + display(velx)    + "     " AT(0, 12).
-            PRINT "    ROLL-TGT: " + display(rolltgt)   + "     " AT(0, 13).
-            PRINT "        ROLL: " + display(roll)      + "     " AT(0, 14).
-            
-            PRINT "   VEL-Y-TGT: " + display(velytgt) + " [Q/E, R to zero]" AT(0, 16).
-            PRINT "       VEL-Y: " + display(vely)    + "     " AT(0, 17).
-            PRINT "   PITCH-TGT: " + display(pitchtgt)  + "     " AT(0, 18).
-            PRINT "       PITCH: " + display(pitch)     + "     " AT(0, 19).
-
-            SET framecount TO 0.
-
         }
-        SET framecount TO framecount + 1.
-
-        //TODO: Make this only appear if debug mode is on
-        //PRINT "     YAW-MMT: " + display(yawmom)      + "     " AT(0, 20).
-        //PRINT "  YAW-MMTTGT: " + display(yawmomtgt)   + "     " AT(0, 21).
-        //PRINT "    ROLL-MMT: " + display(rollmom)     + "     " AT(0, 22).
-        //PRINT " ROLL-MMTTGT: " + display(rollmomtgt)  + "     " AT(0, 23).
-        //PRINT "   PITCH-MMT: " + display(pitchmom)    + "     " AT(0, 24).
-        //PRINT "PITCH-MMTTGT: " + display(pitchmomtgt) + "     " AT(0, 25).
 
 
         // Vertical Velocity PID Loop
@@ -170,6 +141,38 @@ UNTIL FALSE {
         } ELSE {
             SET vertpid:SETPOINT TO vertacctgt.
             SET thrott TO MAX(0, MIN(1, thrott + vertpid:UPDATE(TIME:SECONDS, vertacc))).
+        }
+
+    }
+
+
+    // Horizontal Control
+
+    IF hcontrol = 0 {
+
+        PRINT "----------------------------------" AT(0, 7).
+        PRINT "   H-CONTROL: OFF [H to toggle]" AT(0, 9).
+
+    } ELSE {
+
+        IF framecount = displayframes {
+
+            PRINT "   H-CONTROL: ON  [H to toggle]" AT(0, 9).
+
+            PRINT " YAW-TGT-VEL: " + display(yawtgtvel) + " [Q/E, R to zero]" AT(0, 11).
+            PRINT "     YAW-VEL: " + display(yawmom)    + "     " AT(0, 12).
+            PRINT "     BEARING: " + display(yaw)       + "     " AT(0, 13).
+
+            PRINT "   VEL-X-TGT: " + display(velxtgt) + " [Q/E, R to zero]" AT(0, 15).
+            PRINT "       VEL-X: " + display(velx)    + "     " AT(0, 16).
+            PRINT "    ROLL-TGT: " + display(rolltgt)   + "     " AT(0, 17).
+            PRINT "        ROLL: " + display(roll)      + "     " AT(0, 18).
+            
+            PRINT "   VEL-Y-TGT: " + display(velytgt) + " [Q/E, R to zero]" AT(0, 20).
+            PRINT "       VEL-Y: " + display(vely)    + "     " AT(0, 21).
+            PRINT "   PITCH-TGT: " + display(pitchtgt)  + "     " AT(0, 22).
+            PRINT "       PITCH: " + display(pitch)     + "     " AT(0, 23).
+
         }
 
 
@@ -196,28 +199,31 @@ UNTIL FALSE {
     }
 
 
+    // Frame Count for Display
+    
+    SET framecount TO framecount + 1.
+    IF framecount > displayframes {
+        SET framecount TO 0.
+    }
+
+
     // Get Input From User
 
     IF Terminal:Input:HASCHAR {
-        SET framecount TO 10.
+        SET framecount TO displayframes.
 
         SET ch TO Terminal:Input:GETCHAR.
         IF ch = "v" {
-            IF vvelon = 0 {
-                SET vvelon TO 1.
+            IF vcontrol = 0 {
+                SET vcontrol TO 1.
+
                 SET vveltgt TO 0.
-                SET velxtgt TO 0.
-                SET velytgt TO 0.
-                SET yawtgtvel TO 0.
+                SET thrott TO 0.
                 LOCK THROTTLE to thrott.
             } ELSE {
-                SET vvelon TO 0.
+                SET vcontrol TO 0.
+
                 UNLOCK THROTTLE.
-                
-                SET SHIP:CONTROL:NEUTRALIZE to TRUE.
-                SET SHIP:CONTROL:PITCH TO 0.
-                SET SHIP:CONTROL:ROLL TO 0.
-                SET SHIP:CONTROL:YAW TO 0.
 
                 CLEARSCREEN.
             }
@@ -230,6 +236,28 @@ UNTIL FALSE {
         }
         IF ch = Terminal:Input:BACKSPACE {
             SET vveltgt TO 0.
+        }
+        
+        IF ch = "h" {
+            IF hcontrol = 0 {
+                SET hcontrol TO 1.
+
+                SET velxtgt TO 0.
+                SET velytgt TO 0.
+                SET yawtgtvel TO 0.
+
+                SAS OFF.
+            } ELSE {
+                SET hcontrol TO 0.
+                
+                SET SHIP:CONTROL:NEUTRALIZE to TRUE.
+                SET SHIP:CONTROL:PITCH TO 0.
+                SET SHIP:CONTROL:ROLL TO 0.
+                SET SHIP:CONTROL:YAW TO 0.
+                SAS ON.
+
+                CLEARSCREEN.
+            }
         }
         IF ch = "q" {
             SET yawtgtvel TO yawtgtvel - 1.
