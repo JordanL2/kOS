@@ -101,14 +101,18 @@ yawpid:RESET().
 // Main Loop
 
 CLEARSCREEN.
-SET framecount TO 0.
+SET framecount TO displayframes.
 UNTIL FALSE {
 
     // Vertical Control
 
     IF vcontrol = 0 {
 
-        PRINT "   V-CONTROL: OFF [V to enable]" AT(0, 0).
+        IF framecount = displayframes {
+
+            PRINT "   V-CONTROL: OFF [V to enable]" AT(0, 0).
+
+        }
 
     } ELSE {
         
@@ -142,13 +146,20 @@ UNTIL FALSE {
 
     IF hcontrol = 0 {
 
-        PRINT "----------------------------------" AT(0, 7).
-        PRINT "   H-CONTROL: OFF [H to enable]" AT(0, 9).
+        IF framecount = displayframes {
+
+            PRINT "----------------------------------" AT(0, 7).
+
+            PRINT "   H-CONTROL: OFF [H to enable]" AT(0, 9).
+
+        }
 
     } ELSE {
 
         IF framecount = displayframes {
 
+            PRINT "----------------------------------" AT(0, 7).
+        
             PRINT "   H-CONTROL: ON  [H to disable]" AT(0, 9).
 
             PRINT " MOM-YAW-TGT: " + display(yawmomtgt) + " [Q/E, R to zero]" AT(0, 11).
