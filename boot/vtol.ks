@@ -7,7 +7,7 @@ SET hcontrol TO 0.
 SET velxtgt TO 0.
 SET velytgt TO 0.
 
-SET displayframes TO 10.
+SET displayframes TO 5.
 
 
 // Functions
@@ -56,7 +56,7 @@ LOCK velzacc TO SHIP:SENSORS:ACC:Z.
 
 SET velzaccF TO 0.1.
 LOCK velzacctgt TO (velztgt - velz) * velzaccF.
-SET vertpid TO PIDLOOP(0.04, 0.04, 0.04, -0.05, 0.05).
+SET vertpid TO PIDLOOP(0.08, 0.08, 0.08, -0.1, 0.1).
 vertpid:RESET().
 
 
@@ -65,10 +65,10 @@ vertpid:RESET().
 LOCK velx TO SHIP:VELOCITY:SURFACE * SHIP:FACING:STARVECTOR.
 LOCK vely TO SHIP:VELOCITY:SURFACE * SHIP:FACING:FOREVECTOR.
 
-SET maxtilt TO 45.
-SET velxpid TO PIDLOOP(3, 1, 0.1, -maxtilt, maxtilt).
+SET velxpid TO PIDLOOP(3, 1, 0.1, -25, 25).
 velxpid:RESET().
-SET velypid TO PIDLOOP(3, 1, 0.1, -maxtilt, maxtilt).
+// This gets inverted, the pitch is actually limited from -25 (down) to +45 (up) in order to enable quick stopping
+SET velypid TO PIDLOOP(3, 1, 0.1, -45, 25).
 velypid:RESET().
 
 
@@ -102,7 +102,14 @@ yawpid:RESET().
 
 CLEARSCREEN.
 SET framecount TO displayframes.
+SET fpstimestart TO TIME:SECONDS.
+SET fpscount TO 0.
 UNTIL FALSE {
+
+    // Frame Timing
+
+    SET framestarttime TO TIME:SECONDS.
+
 
     // Vertical Control
 
@@ -111,6 +118,8 @@ UNTIL FALSE {
         IF framecount = displayframes {
 
             PRINT "   V-CONTROL: OFF [V to enable]" AT(0, 0).
+
+            PRINT "----------------------------------" AT(0, 7).
 
         }
 
@@ -126,6 +135,8 @@ UNTIL FALSE {
             PRINT "       VEL-Z: " + display(velz)       + "     " AT(0, 3).
             PRINT "VEL-Z-ACCTGT: " + display(velzacctgt) + "     " AT(0, 4).
             print "   VEL-Z-ACC: " + display(velzacc)    + "     " AT(0, 5).
+
+            PRINT "----------------------------------" AT(0, 7).
 
         }
 
@@ -148,17 +159,15 @@ UNTIL FALSE {
 
         IF framecount = displayframes {
 
-            PRINT "----------------------------------" AT(0, 7).
-
             PRINT "   H-CONTROL: OFF [H to enable]" AT(0, 9).
+
+            PRINT "----------------------------------" AT(0, 25).
 
         }
 
     } ELSE {
 
         IF framecount = displayframes {
-
-            PRINT "----------------------------------" AT(0, 7).
         
             PRINT "   H-CONTROL: ON  [H to disable]" AT(0, 9).
 
@@ -175,6 +184,8 @@ UNTIL FALSE {
             PRINT "       VEL-Y: " + display(vely)    + "     " AT(0, 21).
             PRINT "   PITCH-TGT: " + display(pitchtgt)  + "     " AT(0, 22).
             PRINT "       PITCH: " + display(pitch)     + "     " AT(0, 23).
+
+            PRINT "----------------------------------" AT(0, 25).
 
         }
 
@@ -290,5 +301,16 @@ UNTIL FALSE {
         }
     }
 
-    WAIT 0.001.
+
+    // Frame Timing
+    
+    SET fpscount TO fpscount + 1.
+    IF TIME:SECONDS - fpstimestart >= 1 {
+        SET fpstimestart TO fpstimestart + 1.
+        PRINT "         FPS: " + display(fpscount) + "    " AT (0, 27).
+        SET fpscount TO 0.
+    }
+
+    WAIT 0.09 - (TIME:SECONDS - framestarttime).
+
 }
