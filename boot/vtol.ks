@@ -232,7 +232,11 @@ UNTIL FALSE {
                 SET vcontrol TO 1.
 
                 SET velztgt TO 0.
-                SET thrott TO 0.
+                IF (SHIP:STATUS = "LANDED" OR SHIP:STATUS = "SPLASHED" OR SHIP:STATUS = "PRELAUNCH") {
+                    SET thrott TO 0.
+                } ELSE {
+                    SET thrott TO 1.
+                }
                 LOCK THROTTLE to thrott.
             } ELSE {
                 SET vcontrol TO 0.
