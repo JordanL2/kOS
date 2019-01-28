@@ -128,7 +128,7 @@ UNTIL FALSE {
 
         IF framecount = displayframes {
 
-            PRINT "   V-CONTROL: OFF [V to enable]" AT(0, 0).
+            PRINT "   V-CONTROL: OFF [V to enable] " AT(0, 0).
 
             PRINT "----------------------------------" AT(0, 7).
 
@@ -170,7 +170,7 @@ UNTIL FALSE {
 
         IF framecount = displayframes {
 
-            PRINT "   H-CONTROL: OFF [H to enable]" AT(0, 9).
+            PRINT "   H-CONTROL: OFF [H to enable] " AT(0, 9).
 
             PRINT "----------------------------------" AT(0, 25).
 
@@ -228,7 +228,7 @@ UNTIL FALSE {
 
     IF framecount = displayframes {
         IF finecontrol = 0 {
-            PRINT "FINE-CONTROL: OFF [F to enable]" AT(0, 27).
+            PRINT "FINE-CONTROL: OFF [F to enable] " AT(0, 27).
         } ELSE {
             PRINT "FINE-CONTROL: ON  [F to disable]" AT(0, 27).
         }
