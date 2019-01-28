@@ -54,7 +54,7 @@ DECLARE FUNCTION display {
 LOCK velz TO SHIP:VERTICALSPEED.
 LOCK velzacc TO SHIP:SENSORS:ACC:Z.
 
-SET velzaccF TO 0.1.
+SET velzaccF TO 0.2.
 LOCK velzacctgt TO (velztgt - velz) * velzaccF.
 SET vertpid TO PIDLOOP(0.08, 0.08, 0.08, -0.1, 0.1).
 vertpid:RESET().
@@ -68,7 +68,7 @@ LOCK vely TO SHIP:VELOCITY:SURFACE * SHIP:FACING:FOREVECTOR.
 LOCK velxacc TO SHIP:SENSORS:ACC * SHIP:FACING:STARVECTOR.
 LOCK velyacc TO SHIP:SENSORS:ACC * SHIP:FACING:FOREVECTOR.
 
-SET velhaccF TO 0.3.
+SET velhaccF TO 0.5.
 LOCK velxacctgt TO (velxtgt - velx) * velhaccF.
 LOCK velyacctgt TO (velytgt - vely) * velhaccF.
 
@@ -251,18 +251,17 @@ UNTIL FALSE {
 
                 CLEARSCREEN.
             }
-        }
-        IF ch = "-" {
+            
+        } ELSE IF ch = "-" {
             SET velztgt TO velztgt - 1.
-        }
-        IF ch = "=" {
+
+        } ELSE IF ch = "=" {
             SET velztgt TO velztgt + 1.
-        }
-        IF ch = Terminal:Input:BACKSPACE {
+
+        } ELSE IF ch = Terminal:Input:BACKSPACE {
             SET velztgt TO 0.
-        }
-        
-        IF ch = "h" {
+
+        } ELSE IF ch = "h" {
             IF hcontrol = 0 {
                 SET hcontrol TO 1.
 
@@ -285,26 +284,26 @@ UNTIL FALSE {
 
                 CLEARSCREEN.
             }
-        }
-        IF ch = "q" {
+
+        } ELSE IF ch = "q" {
             SET yawmomtgt TO yawmomtgt - 1.
-        }
-        IF ch = "e" {
+
+        } ELSE IF ch = "e" {
             SET yawmomtgt TO yawmomtgt + 1.
-        }
-        IF ch = "w" {
+
+        } ELSE IF ch = "w" {
             SET velytgt TO velytgt + 1.
-        }
-        IF ch = "s" {
+
+        } ELSE IF ch = "s" {
             SET velytgt TO velytgt - 1.
-        }
-        IF ch = "a" {
+
+        } ELSE IF ch = "a" {
             SET velxtgt TO velxtgt - 1.
-        }
-        IF ch = "d" {
+
+        } ELSE  IF ch = "d" {
             SET velxtgt TO velxtgt + 1.
-        }
-        IF ch = "r" {
+
+        } ELSE IF ch = "r" {
             SET velxtgt TO 0.
             SET velytgt TO 0.
             SET yawmomtgt TO 0.
