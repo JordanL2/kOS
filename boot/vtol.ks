@@ -9,6 +9,11 @@ SET velytgt TO 0.
 
 SET displayframes TO 5.
 
+SET finecontrol TO 0.
+SET normalinc TO 1.
+SET fineinc TO 0.1.
+SET inc TO normalinc.
+
 
 // Functions
 
@@ -219,6 +224,17 @@ UNTIL FALSE {
     }
 
 
+    // Fine Control Display
+
+    IF framecount = displayframes {
+        IF finecontrol = 0 {
+            PRINT "FINE-CONTROL: OFF [F to enable]" AT(0, 27).
+        } ELSE {
+            PRINT "FINE-CONTROL: ON  [F to disable]" AT(0, 27).
+        }
+    }
+
+
     // Frame Count for Display
     
     SET framecount TO framecount + 1.
@@ -251,12 +267,12 @@ UNTIL FALSE {
 
                 CLEARSCREEN.
             }
-            
+
         } ELSE IF ch = "-" {
-            SET velztgt TO velztgt - 1.
+            SET velztgt TO velztgt - inc.
 
         } ELSE IF ch = "=" {
-            SET velztgt TO velztgt + 1.
+            SET velztgt TO velztgt + inc.
 
         } ELSE IF ch = Terminal:Input:BACKSPACE {
             SET velztgt TO 0.
@@ -286,27 +302,37 @@ UNTIL FALSE {
             }
 
         } ELSE IF ch = "q" {
-            SET yawmomtgt TO yawmomtgt - 1.
+            SET yawmomtgt TO yawmomtgt - inc.
 
         } ELSE IF ch = "e" {
-            SET yawmomtgt TO yawmomtgt + 1.
+            SET yawmomtgt TO yawmomtgt + inc.
 
         } ELSE IF ch = "w" {
-            SET velytgt TO velytgt + 1.
+            SET velytgt TO velytgt + inc.
 
         } ELSE IF ch = "s" {
-            SET velytgt TO velytgt - 1.
+            SET velytgt TO velytgt - inc.
 
         } ELSE IF ch = "a" {
-            SET velxtgt TO velxtgt - 1.
+            SET velxtgt TO velxtgt - inc.
 
         } ELSE  IF ch = "d" {
-            SET velxtgt TO velxtgt + 1.
+            SET velxtgt TO velxtgt + inc.
 
         } ELSE IF ch = "r" {
             SET velxtgt TO 0.
             SET velytgt TO 0.
             SET yawmomtgt TO 0.
+
+        } ELSE IF ch = "f" {
+            IF finecontrol = 0 {
+                SET finecontrol TO 1.
+                SET inc TO fineinc.
+            } ELSE {
+                SET finecontrol TO 0.
+                SET inc TO normalinc.
+            }
+
         }
     }
 
@@ -316,7 +342,7 @@ UNTIL FALSE {
     SET fpscount TO fpscount + 1.
     IF TIME:SECONDS - fpstimestart >= 1 {
         SET fpstimestart TO fpstimestart + 1.
-        PRINT "         FPS: " + display(fpscount) + "    " AT (0, 27).
+        PRINT "         FPS: " + display(fpscount) + "    " AT (0, 28).
         SET fpscount TO 0.
     }
 
