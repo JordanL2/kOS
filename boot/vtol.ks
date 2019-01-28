@@ -65,10 +65,17 @@ vertpid:RESET().
 LOCK velx TO SHIP:VELOCITY:SURFACE * SHIP:FACING:STARVECTOR.
 LOCK vely TO SHIP:VELOCITY:SURFACE * SHIP:FACING:FOREVECTOR.
 
-SET velxpid TO PIDLOOP(3, 1, 0.1, -25, 25).
+LOCK velxacc TO SHIP:SENSORS:ACC * SHIP:FACING:STARVECTOR.
+LOCK velyacc TO SHIP:SENSORS:ACC * SHIP:FACING:FOREVECTOR.
+
+SET velhaccF TO 0.3.
+LOCK velxacctgt TO (velxtgt - velx) * velhaccF.
+LOCK velyacctgt TO (velytgt - vely) * velhaccF.
+
+SET velxpid TO PIDLOOP(3, 3, 0.01, -25, 25).
 velxpid:RESET().
 // This gets inverted, the pitch is actually limited from -25 (down) to +45 (up) in order to enable quick stopping
-SET velypid TO PIDLOOP(3, 1, 0.1, -45, 25).
+SET velypid TO PIDLOOP(3, 3, 0.05, -45, 25).
 velypid:RESET().
 
 
@@ -86,9 +93,8 @@ SET pitchtgt TO 0.
 SET rolltgt TO 0.
 SET yawmomtgt TO 0.
 
-SET momF TO 1.
-LOCK pitchmomtgt TO (pitchtgt - pitch) * momF.
-LOCK rollmomtgt TO (rolltgt - roll) * momF.
+LOCK pitchmomtgt TO (pitchtgt - pitch) * 1.
+LOCK rollmomtgt TO (rolltgt - roll) * 0.3.
 
 SET pitchpid TO PIDLOOP(0.1, 0.05, 0.01, -1, 1).
 pitchpid:RESET().
@@ -192,11 +198,11 @@ UNTIL FALSE {
 
         // Horizontal Velocity PID Loop
 
-        SET velxpid:SETPOINT TO velxtgt.
-        SET rolltgt TO velxpid:UPDATE(TIME:SECONDS, velx).
+        SET velxpid:SETPOINT TO velxacctgt.
+        SET rolltgt TO velxpid:UPDATE(TIME:SECONDS, velxacc).
 
-        SET velypid:SETPOINT TO velytgt.
-        SET pitchtgt TO (0 - velypid:UPDATE(TIME:SECONDS, vely)).
+        SET velypid:SETPOINT TO velyacctgt.
+        SET pitchtgt TO (0 - velypid:UPDATE(TIME:SECONDS, velyacc)).
 
     
         // Steering PID Loop
@@ -315,6 +321,6 @@ UNTIL FALSE {
         SET fpscount TO 0.
     }
 
-    WAIT 0.09 - (TIME:SECONDS - framestarttime).
+    WAIT 0.08 - (TIME:SECONDS - framestarttime).
 
 }
