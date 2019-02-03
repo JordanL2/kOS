@@ -1,3 +1,18 @@
+// Arguments
+
+PARAMETER
+    velzaccF, 
+    velzpidKp, velzpidKi, velzpidKd, velzpidMi, velzpidMa,
+    velhaccF, 
+    velxpidKp, velxpidKi, velxpidKd, velxpidMi, velxpidMa,
+    velypidKp, velypidKi, velypidKd, velypidMi, velypidMa,
+    pitchmomF, rollmomF,
+    pitchpidKp, pitchpidKi, pitchpidKd, pitchpidMi, pitchpidMa,
+    rollpidKp, rollpidKi, rollpidKd, rollpidMi, rollpidMa,
+    yawpidKp, yawpidKi, yawpidKd, yawpidMi, yawpidMa
+    .
+
+
 // Default Values
 
 SET vcontrol TO 0.
@@ -59,10 +74,9 @@ DECLARE FUNCTION display {
 LOCK velz TO SHIP:VERTICALSPEED.
 LOCK velzacc TO SHIP:SENSORS:ACC:Z.
 
-SET velzaccF TO 0.2.
 LOCK velzacctgt TO (velztgt - velz) * velzaccF.
-SET vertpid TO PIDLOOP(0.08, 0.08, 0.08, -0.1, 0.1).
-vertpid:RESET().
+SET velzpid TO PIDLOOP(velzpidKp, velzpidKi, velzpidKd, velzpidMi, velzpidMa).
+velzpid:RESET().
 
 
 // Horizontal Velocity Control Setup
@@ -73,14 +87,13 @@ LOCK vely TO SHIP:VELOCITY:SURFACE * SHIP:FACING:FOREVECTOR.
 LOCK velxacc TO SHIP:SENSORS:ACC * SHIP:FACING:STARVECTOR.
 LOCK velyacc TO SHIP:SENSORS:ACC * SHIP:FACING:FOREVECTOR.
 
-SET velhaccF TO 0.5.
 LOCK velxacctgt TO (velxtgt - velx) * velhaccF.
 LOCK velyacctgt TO (velytgt - vely) * velhaccF.
 
-SET velxpid TO PIDLOOP(3, 3, 0.01, -25, 25).
+SET velxpid TO PIDLOOP(velxpidKp, velxpidKi, velxpidKd, velxpidMi, velxpidMa).
 velxpid:RESET().
 // This gets inverted, the pitch is actually limited from -25 (down) to +45 (up) in order to enable quick stopping
-SET velypid TO PIDLOOP(3, 3, 0.05, -45, 25).
+SET velypid TO PIDLOOP(velypidKp, velypidKi, velypidKd, velypidMi, velypidMa).
 velypid:RESET().
 
 
@@ -98,14 +111,14 @@ SET pitchtgt TO 0.
 SET rolltgt TO 0.
 SET yawmomtgt TO 0.
 
-LOCK pitchmomtgt TO (pitchtgt - pitch) * 1.
-LOCK rollmomtgt TO (rolltgt - roll) * 0.3.
+LOCK pitchmomtgt TO (pitchtgt - pitch) * pitchmomF.
+LOCK rollmomtgt TO (rolltgt - roll) * rollmomF.
 
-SET pitchpid TO PIDLOOP(0.1, 0.05, 0.01, -1, 1).
+SET pitchpid TO PIDLOOP(pitchpidKp, pitchpidKi, pitchpidKd, pitchpidMi, pitchpidMa).
 pitchpid:RESET().
-SET rollpid TO PIDLOOP(0.1, 0.03, 0.006, -1, 1).
+SET rollpid TO PIDLOOP(rollpidKp, rollpidKi, rollpidKd, rollpidMi, rollpidMa).
 rollpid:RESET().
-SET yawpid TO PIDLOOP(0.1, 0.03, 0.006, -1, 1).
+SET yawpid TO PIDLOOP(yawpidKp, yawpidKi, yawpidKd, yawpidMi, yawpidMa).
 yawpid:RESET().
 
 
@@ -157,8 +170,8 @@ UNTIL FALSE {
         IF (SHIP:STATUS = "LANDED" OR SHIP:STATUS = "SPLASHED" OR SHIP:STATUS = "PRELAUNCH") AND velztgt <= 0 {
             SET thrott TO 0.
         } ELSE {
-            SET vertpid:SETPOINT TO velzacctgt.
-            SET thrott TO MAX(0, MIN(1, thrott + vertpid:UPDATE(TIME:SECONDS, velzacc))).
+            SET velzpid:SETPOINT TO velzacctgt.
+            SET thrott TO MAX(0, MIN(1, thrott + velzpid:UPDATE(TIME:SECONDS, velzacc))).
         }
 
     }
