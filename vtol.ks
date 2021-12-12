@@ -27,6 +27,7 @@ SET displayframes TO 5.
 SET finecontrol TO 0.
 SET normalinc TO 1.
 SET fineinc TO 0.1.
+SET superinc to 10.
 SET inc TO normalinc.
 
 SET autogear TO 0.
@@ -207,7 +208,7 @@ UNTIL FALSE {
             PRINT "    ROLL-TGT: " + display(rolltgt)   + "     " AT(0, 17).
             PRINT "        ROLL: " + display(roll)      + "     " AT(0, 18).
 
-            PRINT "   VEL-Y-TGT: " + display(velytgt) + " [W/S, R to zero]" AT(0, 20).
+            PRINT "   VEL-Y-TGT: " + display(velytgt) + " [W/S or PgUp/PgDown, R to zero]" AT(0, 20).
             PRINT "       VEL-Y: " + display(vely)    + "     " AT(0, 21).
             PRINT "   PITCH-TGT: " + display(pitchtgt)  + "     " AT(0, 22).
             PRINT "       PITCH: " + display(pitch)     + "     " AT(0, 23).
@@ -303,10 +304,8 @@ UNTIL FALSE {
 
         } ELSE IF ch = "-" {
             SET velztgt TO velztgt - inc.
-
         } ELSE IF ch = "=" {
             SET velztgt TO velztgt + inc.
-
         } ELSE IF ch = Terminal:Input:BACKSPACE {
             SET velztgt TO 0.
 
@@ -336,21 +335,22 @@ UNTIL FALSE {
 
         } ELSE IF ch = "q" {
             SET yawmomtgt TO yawmomtgt - inc.
-
         } ELSE IF ch = "e" {
             SET yawmomtgt TO yawmomtgt + inc.
 
         } ELSE IF ch = "w" {
             SET velytgt TO velytgt + inc.
-
         } ELSE IF ch = "s" {
             SET velytgt TO velytgt - inc.
-
         } ELSE IF ch = "a" {
             SET velxtgt TO velxtgt - inc.
-
         } ELSE  IF ch = "d" {
             SET velxtgt TO velxtgt + inc.
+
+        } ELSE IF ch = Terminal:Input:PAGEUPCURSOR {
+            SET velytgt TO velytgt + superinc.
+        } ELSE IF ch = Terminal:Input:PAGEDOWNCURSOR {
+            SET velytgt TO velytgt - superinc.
 
         } ELSE IF ch = "r" {
             SET velxtgt TO 0.
