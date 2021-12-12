@@ -402,7 +402,7 @@ UNTIL FALSE {
     SET fpscount TO fpscount + 1.
     IF TIME:SECONDS - fpstimestart >= 1 {
         SET fpstimestart TO fpstimestart + 1.
-        PRINT "              FPS: " + display(fpscount) + "    " AT (0, 31).
+        PRINT "FPS: " + fpscount + "    " AT (0, 36).
         SET fpscount TO 0.
     }
 
