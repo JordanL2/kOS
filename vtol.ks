@@ -30,6 +30,7 @@ SET fineinc TO 0.1.
 SET inc TO normalinc.
 
 SET autogear TO 0.
+SET autogear_altitude to 20.
 
 
 // Functions
@@ -252,13 +253,13 @@ UNTIL FALSE {
 
     // Auto-gear control and Altitude
 
-	SET ship_altitude TO ROUND(ALTITUDE - GEOPOSITION:TERRAINHEIGHT - 1.173, 3).
+	SET ship_altitude TO ROUND(ALTITUDE - MAX(0, GEOPOSITION:TERRAINHEIGHT) - 1.173, 3).
     IF autogear = 0 {
 		PRINT "AUTO GEAR CONTROL: OFF [G to enable]" AT(0, 28).
     } ELSE {
 		PRINT "AUTO GEAR CONTROL: ON  [G to disable]" AT(0, 28).
 
-		IF ship_altitude < 20 {
+		IF ship_altitude < autogear_altitude {
 			GEAR ON.
 		} ELSE {
 			GEAR OFF.
