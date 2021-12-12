@@ -1,9 +1,9 @@
 // Arguments
 
 PARAMETER
-    velzaccF, 
+    velzaccF,
     velzpidKp, velzpidKi, velzpidKd, velzpidMi, velzpidMa,
-    velhaccF, 
+    velhaccF,
     velxpidKp, velxpidKi, velxpidKd, velxpidMi, velxpidMa,
     velypidKp, velypidKi, velypidKd, velypidMi, velypidMa,
     pitchmomF, rollmomF,
@@ -28,6 +28,8 @@ SET finecontrol TO 0.
 SET normalinc TO 1.
 SET fineinc TO 0.1.
 SET inc TO normalinc.
+
+SET autogear TO 0.
 
 
 // Functions
@@ -148,7 +150,7 @@ UNTIL FALSE {
         }
 
     } ELSE {
-        
+
         // Display Status
 
         IF framecount = displayframes {
@@ -192,7 +194,7 @@ UNTIL FALSE {
     } ELSE {
 
         IF framecount = displayframes {
-        
+
             PRINT "   H-CONTROL: ON  [H to disable]" AT(0, 9).
 
             PRINT " MOM-YAW-TGT: " + display(yawmomtgt) + " [Q/E, R to zero]" AT(0, 11).
@@ -203,7 +205,7 @@ UNTIL FALSE {
             PRINT "       VEL-X: " + display(velx)    + "     " AT(0, 16).
             PRINT "    ROLL-TGT: " + display(rolltgt)   + "     " AT(0, 17).
             PRINT "        ROLL: " + display(roll)      + "     " AT(0, 18).
-            
+
             PRINT "   VEL-Y-TGT: " + display(velytgt) + " [W/S, R to zero]" AT(0, 20).
             PRINT "       VEL-Y: " + display(vely)    + "     " AT(0, 21).
             PRINT "   PITCH-TGT: " + display(pitchtgt)  + "     " AT(0, 22).
@@ -222,15 +224,15 @@ UNTIL FALSE {
         SET velypid:SETPOINT TO velyacctgt.
         SET pitchtgt TO (0 - velypid:UPDATE(TIME:SECONDS, velyacc)).
 
-    
+
         // Steering PID Loop
-    
+
         SET pitchpid:SETPOINT TO pitchmomtgt.
         SET SHIP:CONTROL:PITCH TO pitchpid:UPDATE(TIME:SECONDS, pitchmom).
-        
+
         SET rollpid:SETPOINT TO rollmomtgt.
         SET SHIP:CONTROL:ROLL TO rollpid:UPDATE(TIME:SECONDS, rollmom).
-        
+
         SET yawpid:SETPOINT TO yawmomtgt.
         SET SHIP:CONTROL:YAW TO yawpid:UPDATE(TIME:SECONDS, yawmom).
 
@@ -241,15 +243,32 @@ UNTIL FALSE {
 
     IF framecount = displayframes {
         IF finecontrol = 0 {
-            PRINT "FINE-CONTROL: OFF [F to enable] " AT(0, 27).
+            PRINT "     FINE-CONTROL: OFF [F to enable] " AT(0, 27).
         } ELSE {
-            PRINT "FINE-CONTROL: ON  [F to disable]" AT(0, 27).
+            PRINT "     FINE-CONTROL: ON  [F to disable]" AT(0, 27).
         }
     }
 
 
+    // Auto-gear control and Altitude
+
+	SET ship_altitude TO ROUND(ALTITUDE - GEOPOSITION:TERRAINHEIGHT - 1.173, 3).
+    IF autogear = 0 {
+		PRINT "AUTO GEAR CONTROL: OFF [G to enable]" AT(0, 28).
+    } ELSE {
+		PRINT "AUTO GEAR CONTROL: ON  [G to disable]" AT(0, 28).
+
+		IF ship_altitude < 20 {
+			GEAR ON.
+		} ELSE {
+			GEAR OFF.
+		}
+    }
+    PRINT "         ALTITUDE: " + ship_altitude + "m       " AT(0, 29).
+
+
     // Frame Count for Display
-    
+
     SET framecount TO framecount + 1.
     IF framecount > displayframes {
         SET framecount TO 0.
@@ -304,7 +323,7 @@ UNTIL FALSE {
                 SET yawmomtgt TO 0.
             } ELSE {
                 SET hcontrol TO 0.
-                
+
                 SET SHIP:CONTROL:PITCH TO 0.
                 SET SHIP:CONTROL:ROLL TO 0.
                 SET SHIP:CONTROL:YAW TO 0.
@@ -346,16 +365,23 @@ UNTIL FALSE {
                 SET inc TO normalinc.
             }
 
+        } ELSE IF ch = "g" {
+            IF autogear = 0 {
+                SET autogear TO 1.
+            } ELSE {
+                SET autogear TO 0.
+            }
+
         }
     }
 
 
     // Frame Timing
-    
+
     SET fpscount TO fpscount + 1.
     IF TIME:SECONDS - fpstimestart >= 1 {
         SET fpstimestart TO fpstimestart + 1.
-        PRINT "         FPS: " + display(fpscount) + "    " AT (0, 28).
+        PRINT "              FPS: " + display(fpscount) + "    " AT (0, 31).
         SET fpscount TO 0.
     }
 
