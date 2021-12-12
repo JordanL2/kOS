@@ -372,6 +372,27 @@ UNTIL FALSE {
                 SET autogear TO 0.
             }
 
+		} ELSE IF ch = "1" {
+			TOGGLE AG1.
+		} ELSE IF ch = "2" {
+			TOGGLE AG2.
+		} ELSE IF ch = "3" {
+			TOGGLE AG3.
+		} ELSE IF ch = "4" {
+			TOGGLE AG4.
+		} ELSE IF ch = "5" {
+			TOGGLE AG5.
+		} ELSE IF ch = "6" {
+			TOGGLE AG6.
+		} ELSE IF ch = "7" {
+			TOGGLE AG7.
+		} ELSE IF ch = "8" {
+			TOGGLE AG8.
+		} ELSE IF ch = "9" {
+			TOGGLE AG9.
+		} ELSE IF ch = "0" {
+			TOGGLE AG10.
+
         }
     }
 
