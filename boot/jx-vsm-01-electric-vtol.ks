@@ -4,7 +4,7 @@ RUNPATH("0:/vtol.ks",
 //  Accel F
 	0.2,
 //  Z velocity PID Kp, Ki, Kd, Min, Max
-	0.01, 0.01, 0.01, -0.01, 0.01,
+	0.01, 0.001, 0.01, -0.01, 0.01,
 
 //  Horizontal Control
 //  Accel F
