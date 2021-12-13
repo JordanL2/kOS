@@ -9,7 +9,8 @@ PARAMETER
     pitchmomF, rollmomF,
     pitchpidKp, pitchpidKi, pitchpidKd, pitchpidMi, pitchpidMa,
     rollpidKp, rollpidKi, rollpidKd, rollpidMi, rollpidMa,
-    yawpidKp, yawpidKi, yawpidKd, yawpidMi, yawpidMa
+    yawpidKp, yawpidKi, yawpidKd, yawpidMi, yawpidMa,
+    loopFunction IS { PARAMETER ch. RETURN FALSE. }
     .
 
 
@@ -254,7 +255,7 @@ UNTIL FALSE {
 
     // Auto-gear control and Altitude
 
-	SET ship_altitude TO ROUND(ALTITUDE - MAX(0, GEOPOSITION:TERRAINHEIGHT) - 1.173, 3).
+	SET ship_altitude TO ROUND(ALTITUDE - MAX(0, GEOPOSITION:TERRAINHEIGHT), 3).
     IF autogear = 0 {
 		PRINT "AUTO GEAR CONTROL: OFF [G to enable]" AT(0, 28).
     } ELSE {
@@ -283,7 +284,11 @@ UNTIL FALSE {
         SET framecount TO displayframes.
 
         SET ch TO Terminal:Input:GETCHAR.
-        IF ch = "v" {
+
+        IF loopFunction(ch) {
+        	// Custom loop function consumed the input
+
+        } ELSE IF ch = "v" {
             IF vcontrol = 0 {
                 SET vcontrol TO 1.
 
@@ -395,6 +400,12 @@ UNTIL FALSE {
 			TOGGLE AG10.
 
         }
+
+    } ELSE {
+    	// Key wasn't pressed but we should call
+    	// the custom loop function anyway
+    	loopFunction("").
+
     }
 
 
