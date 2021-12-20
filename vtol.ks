@@ -201,10 +201,10 @@ UNTIL FALSE {
 
             PRINT "   H-CONTROL: ON  [H to disable]" AT(0, 9).
 
-            PRINT " MOM-YAW-TGT: " + display(yawmomtgt) + " [Q/E, R to zero]" AT(0, 11).
-            PRINT "     MOM-YAW: " + display(yawmom)    + "     " AT(0, 12).
-            PRINT " BEARING-TGT: " + display(yawtgt)       + "     " AT(0, 13).
-            PRINT "     BEARING: " + display(yaw)       + "     " AT(0, 14).
+            PRINT " BEARING-TGT: " + display(yawtgt)    + " [Q/E, R to zero]" AT(0, 11).
+            PRINT "     BEARING: " + display(yaw)       + "     " AT(0, 12).
+            PRINT " MOM-YAW-TGT: " + display(yawmomtgt) + "     " AT(0, 13).
+            PRINT "     MOM-YAW: " + display(yawmom)    + "     " AT(0, 14).
 
             PRINT "   VEL-X-TGT: " + display(velxtgt) + " [A/D, R to zero]" AT(0, 16).
             PRINT "       VEL-X: " + display(velx)    + "     " AT(0, 17).
