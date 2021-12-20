@@ -22,7 +22,7 @@ RUNPATH("0:/vtol.ks",
 //  Roll PID Kp, Ki, Kd, Min, Max
 	1, 0, 0, -1, 1,
 //  Yaw PID Kp, Ki, Kd, Min, Max
-	0.1, 0.03, 0.006, -0.5, 0.5,
+	1, 0, 0, -1, 1,
 
 	{
 		PARAMETER ch.
