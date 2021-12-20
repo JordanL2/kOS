@@ -92,7 +92,7 @@ LOCK vely TO SHIP:VELOCITY:SURFACE * SHIP:FACING:FOREVECTOR.
 LOCK velxacc TO SHIP:SENSORS:ACC * SHIP:FACING:STARVECTOR.
 LOCK velyacc TO SHIP:SENSORS:ACC * SHIP:FACING:FOREVECTOR.
 
-LOCK velxacctgt TO (velxtgt - velx) * velhaccF.
+LOCK velxacctgt TO (velxtgt - velx) * velhaccF / MAX(1, ABS(vely)).
 LOCK velyacctgt TO (velytgt - vely) * velhaccF.
 
 SET velxpid TO PIDLOOP(velxpidKp, velxpidKi, velxpidKd, velxpidMi, velxpidMa).
