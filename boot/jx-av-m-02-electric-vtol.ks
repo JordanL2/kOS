@@ -2,9 +2,9 @@ RUNPATH("0:/vtol.ks",
 
 // Vertical Control
 //  Accel F
-	0.2,
+	0.8,
 //  Z velocity PID Kp, Ki, Kd, Min, Max
-	0.01, 0.001, 0.01, -0.01, 0.01,
+	0.01, 0.001, 0.001, -0.01, 0.01,
 
 //  Horizontal Control
 //  Accel F
@@ -18,10 +18,30 @@ RUNPATH("0:/vtol.ks",
 //  Pitch momentum F, Roll momentum F
 	0.2, 0.02,
 //  Pitch PID Kp, Ki, Kd, Min, Max
-	0.8, 0.005, 0.1, -1, 1,
+	2, 0.01, 0.2, -2, 2,
 //  Roll PID Kp, Ki, Kd, Min, Max
-	0.8, 0.005, 0.1, -1, 1,
+	2, 0.01, 0.2, -2, 2,
 //  Yaw PID Kp, Ki, Kd, Min, Max
-	0.1, 0.03, 0.006, -0.5, 0.5
+	0.1, 0.03, 0.006, -0.5, 0.5,
+
+	{
+		PARAMETER ch.
+		SET return_val TO FALSE.
+
+		SET rotors TO SHIP:PARTSTITLED("EM-16 Light Duty Rotor").
+		FOR rotor IN rotors {
+			rotor:GETMODULE("ModuleRoboticServoRotor"):SETFIELD("rpm limit", THROTTLE * 460).
+			rotor:GETMODULE("ModuleRoboticServoRotor"):SETFIELD("torque limit(%)", 100).
+		}
+
+		SET rw TO SHIP:PARTSTITLED("Small Inline Reaction Wheel")[0].
+		IF (SHIP:STATUS = "LANDED" OR SHIP:STATUS = "SPLASHED" OR SHIP:STATUS = "PRELAUNCH") AND THROTTLE = 0 {
+			rw:GETMODULE("ModuleReactionWheel"):DOACTION("deactivate wheel", TRUE).
+		} ELSE {
+			rw:GETMODULE("ModuleReactionWheel"):DOACTION("activate wheel", TRUE).
+		}
+
+		RETURN return_val.
+	}
 
 ).
