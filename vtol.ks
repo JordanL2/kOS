@@ -363,7 +363,7 @@ UNTIL FALSE {
         } ELSE IF ch = "r" {
             SET velxtgt TO 0.
             SET velytgt TO 0.
-            SET yawmomtgt TO 0.
+            SET yawtgt TO ROUND(yaw).
 
         } ELSE IF ch = "f" {
             IF finecontrol = 0 {
