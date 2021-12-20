@@ -69,9 +69,17 @@ RUNPATH("0:/vtol.ks",
 		}
 
 		IF prop_ready {
-			PRINT "      VTOL ENGINE: ON  [1 to disable]" AT (0, 32).
+			IF displayveldebug = 1 {
+				PRINT "      VTOL ENGINE: ON  [1 to disable]" AT (0, 33).
+			} ELSE {
+				PRINT "      VTOL ENGINE: ON  [1 to disable]" AT (0, 25).
+			}
 		} ELSE {
-			PRINT "      VTOL ENGINE: OFF [1 to enable] " AT (0, 32).
+			IF displayveldebug = 1 {
+				PRINT "      VTOL ENGINE: OFF [1 to enable] " AT (0, 33).
+			} ELSE {
+				PRINT "      VTOL ENGINE: OFF [1 to enable] " AT (0, 25).
+			}
 		}
 
 		RETURN return_val.

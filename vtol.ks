@@ -128,6 +128,9 @@ SET yawpid TO PIDLOOP(yawpidKp, yawpidKi, yawpidKd, yawpidMi, yawpidMa).
 yawpid:RESET().
 
 
+SET displayveldebug TO 0.
+
+
 // Main Loop
 
 CLEARSCREEN.
@@ -161,7 +164,6 @@ UNTIL FALSE {
         SET velypid:SETPOINT TO velyacctgt.
         SET pitchtgt TO (0 - velypid:UPDATE(TIME:SECONDS, velyacc)).
 
-
         // Steering PID Loop
 
         SET pitchpid:SETPOINT TO pitchmomtgt.
@@ -186,60 +188,119 @@ UNTIL FALSE {
 
     // Display
     IF framecount = displayframes {
-	    IF vcontrol = 0 {
+    	IF displayveldebug = 1 {
 
-            PRINT "   V-CONTROL: OFF [V to enable] " AT(0, 0).
-            PRINT "----------------------------------" AT(0, 7).
+		    IF vcontrol = 0 {
 
-	    } ELSE {
+	            PRINT "   V-CONTROL: OFF [V to enable] " AT(0, 0).
+	            PRINT "----------------------------------" AT(0, 7).
 
-			PRINT "   V-CONTROL: ON  [V to disable]" AT(0, 0).
-			PRINT "   VEL-Z-TGT: " + display(velztgt)    + " [-/+, BSP to zero]" AT(0, 2).
-			PRINT "       VEL-Z: " + display(velz)       + "     " AT(0, 3).
-			PRINT "VEL-Z-ACCTGT: " + display(velzacctgt) + "     " AT(0, 4).
-			print "   VEL-Z-ACC: " + display(velzacc)    + "     " AT(0, 5).
-			PRINT "----------------------------------" AT(0, 7).
+		    } ELSE {
 
-	    }
+				PRINT "   V-CONTROL: ON  [V to disable]" AT(0, 0).
+				PRINT "   VEL-Z-TGT: " + display(velztgt)    + " [-/+, BSP to zero]" AT(0, 2).
+				PRINT "       VEL-Z: " + display(velz)       + "     " AT(0, 3).
+				PRINT "VEL-Z-ACCTGT: " + display(velzacctgt) + "     " AT(0, 4).
+				print "   VEL-Z-ACC: " + display(velzacc)    + "     " AT(0, 5).
+				PRINT "----------------------------------" AT(0, 7).
 
-	    IF hcontrol = 0 {
+		    }
 
-			PRINT "   H-CONTROL: OFF [H to enable] " AT(0, 9).
-			PRINT "----------------------------------" AT(0, 26).
+		    IF hcontrol = 0 {
 
-	    } ELSE {
+				PRINT "   H-CONTROL: OFF [H to enable] " AT(0, 9).
+				PRINT "----------------------------------" AT(0, 26).
 
-			PRINT "   H-CONTROL: ON  [H to disable]" AT(0, 9).
-			PRINT " BEARING-TGT: " + display(yawtgt)    + " [Q/E, R to zero]" AT(0, 11).
-			PRINT "     BEARING: " + display(yaw)       + "     " AT(0, 12).
-			PRINT " MOM-YAW-TGT: " + display(yawmomtgt) + "     " AT(0, 13).
-			PRINT "     MOM-YAW: " + display(yawmom)    + "     " AT(0, 14).
-			PRINT "   VEL-X-TGT: " + display(velxtgt) + " [A/D, R to zero]" AT(0, 16).
-			PRINT "       VEL-X: " + display(velx)    + "     " AT(0, 17).
-			PRINT "    ROLL-TGT: " + display(rolltgt)   + "     " AT(0, 18).
-			PRINT "        ROLL: " + display(roll)      + "     " AT(0, 19).
-			PRINT "   VEL-Y-TGT: " + display(velytgt) + " [W/S or PgUp/PgDown, R to zero]" AT(0, 21).
-			PRINT "       VEL-Y: " + display(vely)    + "     " AT(0, 22).
-			PRINT "   PITCH-TGT: " + display(pitchtgt)  + "     " AT(0, 23).
-			PRINT "       PITCH: " + display(pitch)     + "     " AT(0, 24).
-			PRINT "----------------------------------" AT(0, 26).
+		    } ELSE {
 
-	    }
+				PRINT "   H-CONTROL: ON  [H to disable]" AT(0, 9).
+				PRINT " BEARING-TGT: " + display(yawtgt)    + " [Q/E, R to zero]" AT(0, 11).
+				PRINT "     BEARING: " + display(yaw)       + "     " AT(0, 12).
+				PRINT " MOM-YAW-TGT: " + display(yawmomtgt) + "     " AT(0, 13).
+				PRINT "     MOM-YAW: " + display(yawmom)    + "     " AT(0, 14).
+				PRINT "   VEL-X-TGT: " + display(velxtgt) + " [A/D, R to zero]" AT(0, 16).
+				PRINT "       VEL-X: " + display(velx)    + "     " AT(0, 17).
+				PRINT "    ROLL-TGT: " + display(rolltgt)   + "     " AT(0, 18).
+				PRINT "        ROLL: " + display(roll)      + "     " AT(0, 19).
+				PRINT "   VEL-Y-TGT: " + display(velytgt) + " [W/S or PgUp/PgDown, R to zero]" AT(0, 21).
+				PRINT "       VEL-Y: " + display(vely)    + "     " AT(0, 22).
+				PRINT "   PITCH-TGT: " + display(pitchtgt)  + "     " AT(0, 23).
+				PRINT "       PITCH: " + display(pitch)     + "     " AT(0, 24).
+				PRINT "----------------------------------" AT(0, 26).
 
-	    // Fine Control Display
-        IF finecontrol = 0 {
-            PRINT "     FINE-CONTROL: OFF [F to enable] " AT(0, 28).
-        } ELSE {
-            PRINT "     FINE-CONTROL: ON  [F to disable]" AT(0, 28).
-        }
+		    }
 
-	    // Auto-gear control and Altitude
-	    IF autogear = 0 {
-			PRINT "AUTO GEAR CONTROL: OFF [G to enable] " AT(0, 29).
-	    } ELSE {
-			PRINT "AUTO GEAR CONTROL: ON  [G to disable]" AT(0, 29).
-	    }
-	    PRINT "         ALTITUDE: " + ship_altitude + "m       " AT(0, 30).
+		    // Fine Control Display
+	        IF finecontrol = 0 {
+	            PRINT "     FINE-CONTROL: OFF [F to enable] " AT(0, 28).
+	        } ELSE {
+	            PRINT "     FINE-CONTROL: ON  [F to disable]" AT(0, 28).
+	        }
+
+		    // Auto-gear control and Altitude
+		    IF autogear = 0 {
+				PRINT "AUTO GEAR CONTROL: OFF [G to enable] " AT(0, 29).
+		    } ELSE {
+				PRINT "AUTO GEAR CONTROL: ON  [G to disable]" AT(0, 29).
+		    }
+		    PRINT "         ALTITUDE: " + ship_altitude + "m       " AT(0, 30).
+
+		    // Debug option
+		    PRINT "VEL / MOM DETAILS: ON  [P to disable]" AT(0, 31).
+
+		} ELSE {
+
+		    IF vcontrol = 0 {
+
+	            PRINT "   V-CONTROL: OFF [V to enable] " AT(0, 0).
+	            PRINT "----------------------------------" AT(0, 5).
+
+		    } ELSE {
+
+				PRINT "   V-CONTROL: ON  [V to disable]" AT(0, 0).
+				PRINT "   VEL-Z-TGT: " + display(velztgt)    + " [-/+, BSP to zero]" AT(0, 2).
+				PRINT "       VEL-Z: " + display(velz)       + "     " AT(0, 3).
+				PRINT "----------------------------------" AT(0, 5).
+
+		    }
+
+		    IF hcontrol = 0 {
+
+				PRINT "   H-CONTROL: OFF [H to enable] " AT(0, 7).
+				PRINT "----------------------------------" AT(0, 18).
+
+		    } ELSE {
+
+				PRINT "   H-CONTROL: ON  [H to disable]" AT(0, 7).
+				PRINT " BEARING-TGT: " + display(yawtgt)    + " [Q/E, R to zero]" AT(0, 9).
+				PRINT "     BEARING: " + display(yaw)       + "     " AT(0, 10).
+				PRINT "   VEL-X-TGT: " + display(velxtgt) + " [A/D, R to zero]" AT(0, 12).
+				PRINT "       VEL-X: " + display(velx)    + "     " AT(0, 13).
+				PRINT "   VEL-Y-TGT: " + display(velytgt) + " [W/S or PgUp/PgDown, R to zero]" AT(0, 15).
+				PRINT "       VEL-Y: " + display(vely)    + "     " AT(0, 16).
+				PRINT "----------------------------------" AT(0, 18).
+
+		    }
+
+		    // Fine Control Display
+	        IF finecontrol = 0 {
+	            PRINT "     FINE-CONTROL: OFF [F to enable] " AT(0, 20).
+	        } ELSE {
+	            PRINT "     FINE-CONTROL: ON  [F to disable]" AT(0, 20).
+	        }
+
+		    // Auto-gear control and Altitude
+		    IF autogear = 0 {
+				PRINT "AUTO GEAR CONTROL: OFF [G to enable] " AT(0, 21).
+		    } ELSE {
+				PRINT "AUTO GEAR CONTROL: ON  [G to disable]" AT(0, 21).
+		    }
+		    PRINT "         ALTITUDE: " + ship_altitude + "m       " AT(0, 22).
+
+		    // Debug option
+		    PRINT "VEL / MOM DETAILS: OFF [P to enable] " AT(0, 23).
+
+		}
 	}
 
     // Frame Count for Display
@@ -349,11 +410,12 @@ UNTIL FALSE {
             }
 
         } ELSE IF ch = "p" {
-        	IF displaydebug = 0 {
-                SET displaydebug TO 1.
+        	IF displayveldebug = 0 {
+                SET displayveldebug TO 1.
             } ELSE {
-                SET displaydebug TO 0.
+                SET displayveldebug TO 0.
             }
+            CLEARSCREEN.
 
 		} ELSE IF ch = "1" {
 			TOGGLE AG1.
