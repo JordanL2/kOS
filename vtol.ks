@@ -137,40 +137,10 @@ SET fpscount TO 0.
 UNTIL FALSE {
 
     // Frame Timing
-
     SET framestarttime TO TIME:SECONDS.
 
-
-    // Vertical Control
-
-    IF vcontrol = 0 {
-
-        IF framecount = displayframes {
-
-            PRINT "   V-CONTROL: OFF [V to enable] " AT(0, 0).
-
-            PRINT "----------------------------------" AT(0, 7).
-
-        }
-
-    } ELSE {
-
-        // Display Status
-
-        IF framecount = displayframes {
-
-            PRINT "   V-CONTROL: ON  [V to disable]" AT(0, 0).
-
-            PRINT "   VEL-Z-TGT: " + display(velztgt)    + " [-/+, BSP to zero]" AT(0, 2).
-            PRINT "       VEL-Z: " + display(velz)       + "     " AT(0, 3).
-            PRINT "VEL-Z-ACCTGT: " + display(velzacctgt) + "     " AT(0, 4).
-            print "   VEL-Z-ACC: " + display(velzacc)    + "     " AT(0, 5).
-
-            PRINT "----------------------------------" AT(0, 7).
-
-        }
-
-
+	// Vertical Control
+	IF vcontrol = 1 {
         // Vertical Velocity PID Loop
 
         IF (SHIP:STATUS = "LANDED" OR SHIP:STATUS = "SPLASHED" OR SHIP:STATUS = "PRELAUNCH") AND velztgt <= 0 {
@@ -179,48 +149,10 @@ UNTIL FALSE {
             SET velzpid:SETPOINT TO velzacctgt.
             SET thrott TO MAX(0, MIN(1, thrott + velzpid:UPDATE(TIME:SECONDS, velzacc))).
         }
+	}
 
-    }
-
-
-    // Horizontal Control
-
-    IF hcontrol = 0 {
-
-        IF framecount = displayframes {
-
-            PRINT "   H-CONTROL: OFF [H to enable] " AT(0, 9).
-
-            PRINT "----------------------------------" AT(0, 26).
-
-        }
-
-    } ELSE {
-
-        IF framecount = displayframes {
-
-            PRINT "   H-CONTROL: ON  [H to disable]" AT(0, 9).
-
-            PRINT " BEARING-TGT: " + display(yawtgt)    + " [Q/E, R to zero]" AT(0, 11).
-            PRINT "     BEARING: " + display(yaw)       + "     " AT(0, 12).
-            PRINT " MOM-YAW-TGT: " + display(yawmomtgt) + "     " AT(0, 13).
-            PRINT "     MOM-YAW: " + display(yawmom)    + "     " AT(0, 14).
-
-            PRINT "   VEL-X-TGT: " + display(velxtgt) + " [A/D, R to zero]" AT(0, 16).
-            PRINT "       VEL-X: " + display(velx)    + "     " AT(0, 17).
-            PRINT "    ROLL-TGT: " + display(rolltgt)   + "     " AT(0, 18).
-            PRINT "        ROLL: " + display(roll)      + "     " AT(0, 19).
-
-            PRINT "   VEL-Y-TGT: " + display(velytgt) + " [W/S or PgUp/PgDown, R to zero]" AT(0, 21).
-            PRINT "       VEL-Y: " + display(vely)    + "     " AT(0, 22).
-            PRINT "   PITCH-TGT: " + display(pitchtgt)  + "     " AT(0, 23).
-            PRINT "       PITCH: " + display(pitch)     + "     " AT(0, 24).
-
-            PRINT "----------------------------------" AT(0, 26).
-
-        }
-
-
+	// Horizontal Control
+    IF hcontrol = 1 {
         // Horizontal Velocity PID Loop
 
         SET velxpid:SETPOINT TO velxacctgt.
@@ -240,48 +172,83 @@ UNTIL FALSE {
 
         SET yawpid:SETPOINT TO yawmomtgt.
         SET SHIP:CONTROL:YAW TO yawpid:UPDATE(TIME:SECONDS, yawmom).
+	}
 
-    }
-
-
-    // Fine Control Display
-
-    IF framecount = displayframes {
-        IF finecontrol = 0 {
-            PRINT "     FINE-CONTROL: OFF [F to enable] " AT(0, 28).
-        } ELSE {
-            PRINT "     FINE-CONTROL: ON  [F to disable]" AT(0, 28).
-        }
-    }
-
-
-    // Auto-gear control and Altitude
-
+	// Auto-Gear control
 	SET ship_altitude TO ROUND(ALTITUDE - MAX(0, GEOPOSITION:TERRAINHEIGHT), 3).
-    IF autogear = 0 {
-		PRINT "AUTO GEAR CONTROL: OFF [G to enable]" AT(0, 29).
-    } ELSE {
-		PRINT "AUTO GEAR CONTROL: ON  [G to disable]" AT(0, 29).
-
+    IF autogear = 1 {
 		IF ship_altitude < autogear_altitude {
 			GEAR ON.
 		} ELSE {
 			GEAR OFF.
 		}
     }
-    PRINT "         ALTITUDE: " + ship_altitude + "m       " AT(0, 30).
 
+    // Display
+    IF framecount = displayframes {
+	    IF vcontrol = 0 {
+
+            PRINT "   V-CONTROL: OFF [V to enable] " AT(0, 0).
+            PRINT "----------------------------------" AT(0, 7).
+
+	    } ELSE {
+
+			PRINT "   V-CONTROL: ON  [V to disable]" AT(0, 0).
+			PRINT "   VEL-Z-TGT: " + display(velztgt)    + " [-/+, BSP to zero]" AT(0, 2).
+			PRINT "       VEL-Z: " + display(velz)       + "     " AT(0, 3).
+			PRINT "VEL-Z-ACCTGT: " + display(velzacctgt) + "     " AT(0, 4).
+			print "   VEL-Z-ACC: " + display(velzacc)    + "     " AT(0, 5).
+			PRINT "----------------------------------" AT(0, 7).
+
+	    }
+
+	    IF hcontrol = 0 {
+
+			PRINT "   H-CONTROL: OFF [H to enable] " AT(0, 9).
+			PRINT "----------------------------------" AT(0, 26).
+
+	    } ELSE {
+
+			PRINT "   H-CONTROL: ON  [H to disable]" AT(0, 9).
+			PRINT " BEARING-TGT: " + display(yawtgt)    + " [Q/E, R to zero]" AT(0, 11).
+			PRINT "     BEARING: " + display(yaw)       + "     " AT(0, 12).
+			PRINT " MOM-YAW-TGT: " + display(yawmomtgt) + "     " AT(0, 13).
+			PRINT "     MOM-YAW: " + display(yawmom)    + "     " AT(0, 14).
+			PRINT "   VEL-X-TGT: " + display(velxtgt) + " [A/D, R to zero]" AT(0, 16).
+			PRINT "       VEL-X: " + display(velx)    + "     " AT(0, 17).
+			PRINT "    ROLL-TGT: " + display(rolltgt)   + "     " AT(0, 18).
+			PRINT "        ROLL: " + display(roll)      + "     " AT(0, 19).
+			PRINT "   VEL-Y-TGT: " + display(velytgt) + " [W/S or PgUp/PgDown, R to zero]" AT(0, 21).
+			PRINT "       VEL-Y: " + display(vely)    + "     " AT(0, 22).
+			PRINT "   PITCH-TGT: " + display(pitchtgt)  + "     " AT(0, 23).
+			PRINT "       PITCH: " + display(pitch)     + "     " AT(0, 24).
+			PRINT "----------------------------------" AT(0, 26).
+
+	    }
+
+	    // Fine Control Display
+        IF finecontrol = 0 {
+            PRINT "     FINE-CONTROL: OFF [F to enable] " AT(0, 28).
+        } ELSE {
+            PRINT "     FINE-CONTROL: ON  [F to disable]" AT(0, 28).
+        }
+
+	    // Auto-gear control and Altitude
+	    IF autogear = 0 {
+			PRINT "AUTO GEAR CONTROL: OFF [G to enable] " AT(0, 29).
+	    } ELSE {
+			PRINT "AUTO GEAR CONTROL: ON  [G to disable]" AT(0, 29).
+	    }
+	    PRINT "         ALTITUDE: " + ship_altitude + "m       " AT(0, 30).
+	}
 
     // Frame Count for Display
-
     SET framecount TO framecount + 1.
     IF framecount > displayframes {
         SET framecount TO 0.
     }
 
-
     // Get Input From User
-
     IF Terminal:Input:HASCHAR {
         SET framecount TO displayframes.
 
@@ -381,6 +348,13 @@ UNTIL FALSE {
                 SET autogear TO 0.
             }
 
+        } ELSE IF ch = "p" {
+        	IF displaydebug = 0 {
+                SET displaydebug TO 1.
+            } ELSE {
+                SET displaydebug TO 0.
+            }
+
 		} ELSE IF ch = "1" {
 			TOGGLE AG1.
 		} ELSE IF ch = "2" {
@@ -411,16 +385,13 @@ UNTIL FALSE {
 
     }
 
-
     // Frame Timing
-
     SET fpscount TO fpscount + 1.
     IF TIME:SECONDS - fpstimestart >= 1 {
         SET fpstimestart TO fpstimestart + 1.
         PRINT "FPS: " + fpscount + "    " AT (0, 36).
         SET fpscount TO 0.
     }
-
     WAIT 0.08 - (TIME:SECONDS - framestarttime).
 
 }
