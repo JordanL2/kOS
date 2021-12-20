@@ -18,8 +18,8 @@ RUNPATH("0:/vtol.ks",
 	3, 3, 0.05, -45, 25,
 
 //  Steering Control
-//  Pitch momentum F, Roll momentum F
-	0.1, 0.02,
+//  Pitch momentum F, Roll momentum F, Yaw momentum F
+	0.1, 0.02, 0.2,
 //  Pitch PID Kp, Ki, Kd, Min, Max
 	0.2, 0.01, 0.01, -0.5, 0.5,
 //  Roll PID Kp, Ki, Kd, Min, Max
@@ -69,9 +69,9 @@ RUNPATH("0:/vtol.ks",
 		}
 
 		IF prop_ready {
-			PRINT "      VTOL ENGINE: ON  [1 to disable]" AT (0, 31).
+			PRINT "      VTOL ENGINE: ON  [1 to disable]" AT (0, 32).
 		} ELSE {
-			PRINT "      VTOL ENGINE: OFF [1 to enable] " AT (0, 31).
+			PRINT "      VTOL ENGINE: OFF [1 to enable] " AT (0, 32).
 		}
 
 		RETURN return_val.

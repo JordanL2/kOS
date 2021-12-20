@@ -6,7 +6,7 @@ PARAMETER
     velhaccF,
     velxpidKp, velxpidKi, velxpidKd, velxpidMi, velxpidMa,
     velypidKp, velypidKi, velypidKd, velypidMi, velypidMa,
-    pitchmomF, rollmomF,
+    pitchmomF, rollmomF, yawmomF,
     pitchpidKp, pitchpidKi, pitchpidKd, pitchpidMi, pitchpidMa,
     rollpidKp, rollpidKi, rollpidKd, rollpidMi, rollpidMa,
     yawpidKp, yawpidKi, yawpidKd, yawpidMi, yawpidMa,
@@ -114,10 +114,11 @@ LOCK yawmom TO 0 - SHIP:ANGULARMOMENTUM:Z.
 
 SET pitchtgt TO 0.
 SET rolltgt TO 0.
-SET yawmomtgt TO 0.
+SET yawtgt TO ROUND(yaw).
 
 LOCK pitchmomtgt TO (pitchtgt - pitch) * pitchmomF.
 LOCK rollmomtgt TO (rolltgt - roll) * rollmomF.
+LOCK yawmomtgt TO (yawtgt - yaw) * yawmomF.
 
 SET pitchpid TO PIDLOOP(pitchpidKp, pitchpidKi, pitchpidKd, pitchpidMi, pitchpidMa).
 pitchpid:RESET().
@@ -190,7 +191,7 @@ UNTIL FALSE {
 
             PRINT "   H-CONTROL: OFF [H to enable] " AT(0, 9).
 
-            PRINT "----------------------------------" AT(0, 25).
+            PRINT "----------------------------------" AT(0, 26).
 
         }
 
@@ -202,19 +203,20 @@ UNTIL FALSE {
 
             PRINT " MOM-YAW-TGT: " + display(yawmomtgt) + " [Q/E, R to zero]" AT(0, 11).
             PRINT "     MOM-YAW: " + display(yawmom)    + "     " AT(0, 12).
-            PRINT "     BEARING: " + display(yaw)       + "     " AT(0, 13).
+            PRINT " BEARING-TGT: " + display(yawtgt)       + "     " AT(0, 13).
+            PRINT "     BEARING: " + display(yaw)       + "     " AT(0, 14).
 
-            PRINT "   VEL-X-TGT: " + display(velxtgt) + " [A/D, R to zero]" AT(0, 15).
-            PRINT "       VEL-X: " + display(velx)    + "     " AT(0, 16).
-            PRINT "    ROLL-TGT: " + display(rolltgt)   + "     " AT(0, 17).
-            PRINT "        ROLL: " + display(roll)      + "     " AT(0, 18).
+            PRINT "   VEL-X-TGT: " + display(velxtgt) + " [A/D, R to zero]" AT(0, 16).
+            PRINT "       VEL-X: " + display(velx)    + "     " AT(0, 17).
+            PRINT "    ROLL-TGT: " + display(rolltgt)   + "     " AT(0, 18).
+            PRINT "        ROLL: " + display(roll)      + "     " AT(0, 19).
 
-            PRINT "   VEL-Y-TGT: " + display(velytgt) + " [W/S or PgUp/PgDown, R to zero]" AT(0, 20).
-            PRINT "       VEL-Y: " + display(vely)    + "     " AT(0, 21).
-            PRINT "   PITCH-TGT: " + display(pitchtgt)  + "     " AT(0, 22).
-            PRINT "       PITCH: " + display(pitch)     + "     " AT(0, 23).
+            PRINT "   VEL-Y-TGT: " + display(velytgt) + " [W/S or PgUp/PgDown, R to zero]" AT(0, 21).
+            PRINT "       VEL-Y: " + display(vely)    + "     " AT(0, 22).
+            PRINT "   PITCH-TGT: " + display(pitchtgt)  + "     " AT(0, 23).
+            PRINT "       PITCH: " + display(pitch)     + "     " AT(0, 24).
 
-            PRINT "----------------------------------" AT(0, 25).
+            PRINT "----------------------------------" AT(0, 26).
 
         }
 
@@ -246,9 +248,9 @@ UNTIL FALSE {
 
     IF framecount = displayframes {
         IF finecontrol = 0 {
-            PRINT "     FINE-CONTROL: OFF [F to enable] " AT(0, 27).
+            PRINT "     FINE-CONTROL: OFF [F to enable] " AT(0, 28).
         } ELSE {
-            PRINT "     FINE-CONTROL: ON  [F to disable]" AT(0, 27).
+            PRINT "     FINE-CONTROL: ON  [F to disable]" AT(0, 28).
         }
     }
 
@@ -257,9 +259,9 @@ UNTIL FALSE {
 
 	SET ship_altitude TO ROUND(ALTITUDE - MAX(0, GEOPOSITION:TERRAINHEIGHT), 3).
     IF autogear = 0 {
-		PRINT "AUTO GEAR CONTROL: OFF [G to enable]" AT(0, 28).
+		PRINT "AUTO GEAR CONTROL: OFF [G to enable]" AT(0, 29).
     } ELSE {
-		PRINT "AUTO GEAR CONTROL: ON  [G to disable]" AT(0, 28).
+		PRINT "AUTO GEAR CONTROL: ON  [G to disable]" AT(0, 29).
 
 		IF ship_altitude < autogear_altitude {
 			GEAR ON.
@@ -267,7 +269,7 @@ UNTIL FALSE {
 			GEAR OFF.
 		}
     }
-    PRINT "         ALTITUDE: " + ship_altitude + "m       " AT(0, 29).
+    PRINT "         ALTITUDE: " + ship_altitude + "m       " AT(0, 30).
 
 
     // Frame Count for Display
@@ -325,7 +327,8 @@ UNTIL FALSE {
 
                 SET velxtgt TO 0.
                 SET velytgt TO 0.
-                SET yawmomtgt TO 0.
+                SET yawtgt TO ROUND(yaw).
+
             } ELSE {
                 SET hcontrol TO 0.
 
@@ -339,9 +342,9 @@ UNTIL FALSE {
             }
 
         } ELSE IF ch = "q" {
-            SET yawmomtgt TO yawmomtgt - inc.
+            SET yawtgt TO yawtgt - inc.
         } ELSE IF ch = "e" {
-            SET yawmomtgt TO yawmomtgt + inc.
+            SET yawtgt TO yawtgt + inc.
 
         } ELSE IF ch = "w" {
             SET velytgt TO velytgt + inc.
