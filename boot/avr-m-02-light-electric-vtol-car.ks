@@ -10,9 +10,9 @@ RUNPATH("0:/vtol.ks",
 //  Accel F
 	0.5,
 //  X velocity PID Kp, Ki, Kd, Min, Max
-	3, 3, 0.01, -25, 25,
+	3, 0.1, 0.01, -25, 25,
 //  Y velocity PID Kp, Ki, Kd, Min, Max
-	3, 3, 0.05, -30, 30,
+	3, 0.1, 0.05, -30, 30,
 
 //  Steering Control
 //  Pitch momentum F, Roll momentum F, Yaw momentum F
