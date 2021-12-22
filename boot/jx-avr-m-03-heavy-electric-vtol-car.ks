@@ -2,9 +2,9 @@ RUNPATH("0:/vtol.ks",
 
 // Vertical Control
 //  Accel F
-	0.8,
+	1.6,
 //  Z velocity PID Kp, Ki, Kd, Min, Max
-	0.01, 0.001, 0.001, -0.01, 0.01,
+	0.005, 0.0005, 0.00005, -0.1, 0.1,
 
 //  Horizontal Control
 //  Accel F
@@ -16,13 +16,13 @@ RUNPATH("0:/vtol.ks",
 
 //  Steering Control
 //  Pitch momentum F, Roll momentum F, Yaw momentum F
-	0.5, 0.1, 0.1,
+	0.5, 0.1, 0.2,
 //  Pitch PID Kp, Ki, Kd, Min, Max
 	0.3, 0, 0, -1, 1,
 //  Roll PID Kp, Ki, Kd, Min, Max
 	0.3, 0, 0, -1, 1,
 //  Yaw PID Kp, Ki, Kd, Min, Max
-	0.5, 0.05, 0.01, -1, 1,
+	0.5, 0.1, 0.02, -1, 1,
 
 	{
 		PARAMETER ch.
