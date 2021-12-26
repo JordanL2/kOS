@@ -1,3 +1,5 @@
+SET storage_open TO FALSE.
+
 RUNPATH("0:/vtol.ks",
 
 // Vertical Control
@@ -43,6 +45,12 @@ RUNPATH("0:/vtol.ks",
 			FOR rw IN rws {
 				rw:GETMODULE("ModuleReactionWheel"):DOACTION("activate wheel", TRUE).
 			}
+		}
+
+		SET storage_module TO SHIP:PARTSTITLED("PAS-C Storage Module")[0].
+		IF (vcontrol = 0 AND storage_open) OR (vcontrol = 1 AND NOT storage_open) {
+			storage_module:GETMODULE("ModuleAnimateGeneric"):DOACTION("toggle bay doors", TRUE).
+			SET storage_open TO NOT storage_open.
 		}
 
 		RETURN return_val.
